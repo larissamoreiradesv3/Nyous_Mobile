@@ -1,14 +1,38 @@
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, TextInput } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity } from 'react-native';
 
-const Login = () => {
+const Login = ({navigation}) => {
 
     const [email, setEmail] = useState( '' );
     const [senha, setSenha] = useState( '' );
 
 
     const Logar = () => {
+        
+        const corpo = {
+            email : email,
+            senha : senha
+        }
 
+        fetch('http://192.168.7.21:500/api/Account/Login',{
+            method  : 'POST',
+            headers :{
+                'Content-Type'  :   'application/json'
+            },
+            body : JSON.stringify(corpo)
+        })
+        .then(response => response.json())
+        .then(data => {
+
+            if(data.token !== null || data.token !== undefined || data.token !== '' ){
+                alert('Seja Bem-Vindo <3');
+                alert(data.token);
+                navigation.push('Autenticado');
+            }else{
+                alert('E-mail ou senha incválidos! Por favor, verifique e tente novamente <3')
+            }
+
+        })
     }
 
     return(
@@ -29,9 +53,9 @@ const Login = () => {
             />
              <TouchableOpacity
             style={styles.button}
-            onPress={onPress}
+            onPress={Logar()}
             >
-            <Text>Press Here</Text>
+            <Text style={styles.textButton}>Entrar</Text>
              </TouchableOpacity>
         </View>
     )        
@@ -52,7 +76,21 @@ const styles = StyleSheet.create({
         marginTop   : 20,
         padding     : 5,
         borderRadius: 6
+    },
+    button : {
+        backgroundColor : 'black',
+        width           : '90%',
+        padding         : 10,
+        borderRadius    : 6,
+        marginTop       : 20,
+        flex            : 1,
+        alignItems      : 'center',
+        justifyContent  : 'center',
+    },
+    textButton : {
+        color:'white',
     }
+
   });
 
 export default Login;
